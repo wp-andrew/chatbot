@@ -1,0 +1,1 @@
+[{"model": "qa.InputType", "pk": 1, "fields": {"id": 1, "name": "text"}}, {"model": "qa.InputType", "pk": 2, "fields": {"id": 2, "name": "radio"}}, {"model": "qa.InputType", "pk": 3, "fields": {"id": 3, "name": "checkbox"}}, {"model": "qa.InputType", "pk": 4, "fields": {"id": 4, "name": "date"}}, {"model": "qa.InputType", "pk": 5, "fields": {"id": 5, "name": "time"}}]

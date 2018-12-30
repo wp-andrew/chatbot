@@ -1,0 +1,27 @@
+What is your name?
+text 1
+Type your name...
+
+Are you male or female?
+radio 2
+Male
+Female
+
+When were you born?
+date 0
+
+Are you a smoker?
+radio 2
+Yes
+No
+
+What time do you usually wake up?
+time 0
+
+What sports do you play?
+checkbox 5
+Soccer
+Tennis
+Volleyball
+Basketball
+Baseball

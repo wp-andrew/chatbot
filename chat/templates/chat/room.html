@@ -1,0 +1,234 @@
+<!-- chat/templates/chat/room.html -->
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Chat Room</title>
+</head>
+<body>
+	<textarea id="chat-log" cols="100" rows="20"></textarea><br/>
+</body>
+<script>
+	var roomName = {{ room_name_json }};
+	
+	var chatSocket = new WebSocket(
+		'ws://' + window.location.host +
+		'/ws/chat/' + roomName + '/');
+	
+	chatSocket.onmessage = function(e) {
+		var data         = JSON.parse(e.data);
+		var user_type    = data['user_type'];
+		var message_type = data['message_type'];
+		var message      = data['message'];
+		var input_type   = data['input_type'];
+		var answer       = data['answer'];
+		
+		// display the message in the textarea
+		document.getElementById('chat-log').value += (user_type + ': ' + message + '\n');
+		
+		// auto scroll to the bottom of the textarea
+		var textarea = document.getElementById('chat-log');
+		textarea.scrollTop = textarea.scrollHeight;
+		
+		var body = document.body;
+		
+		if (message_type == 'question') {
+			// create a field to inquire specific type of user input
+			var field = document.createElement('field');
+			field.setAttribute('id', 'answer-field');
+			
+			if (input_type == 'text') {
+				// create text box
+				var element = document.createElement('input');
+				element.setAttribute('id', 'chat-message-input');
+				element.setAttribute('type', input_type);
+				element.setAttribute('size', '100');
+				element.setAttribute('placeholder', answer[0]);
+				
+				field.appendChild(element);
+				
+				// create submit button
+				var element2 = document.createElement('input');
+				element2.setAttribute('id', 'chat-message-submit');
+				element2.setAttribute('type', 'button');
+				element2.setAttribute('value', 'Send');
+				
+				field.appendChild(element2);
+				
+				body.appendChild(field);
+				
+				
+				document.getElementById('chat-message-input').focus();
+				document.getElementById('chat-message-input').onkeyup = function(e) {
+					if (e.keyCode === 13) {	// if enter, return is pressed
+						document.getElementById('chat-message-submit').click();
+					}
+				};
+				
+				// send user input through the socket and remove the field
+				document.getElementById('chat-message-submit').onclick = function(e) {
+					var message = document.getElementById('chat-message-input').value;
+					chatSocket.send(JSON.stringify({
+						'message': message
+					}));
+					
+					var field = document.getElementById('answer-field');
+					
+					field.parentNode.removeChild(field);
+				};
+			}
+			else if (input_type == 'radio') {
+				
+				// create radio button
+				for (i = 0; i < answer.length; i++) {
+					var element = document.createElement('input');
+					element.setAttribute('type', input_type);
+					element.setAttribute('name', 'radio');
+					element.setAttribute('value', answer[i]);
+					
+					field.appendChild(element);
+					
+					var text = document.createTextNode(answer[i] + '\t');
+					
+					field.appendChild(text);
+				}
+				
+				// create submit button
+				var element2 = document.createElement('input');
+				element2.setAttribute('id', 'chat-message-submit');
+				element2.setAttribute('type', 'button');
+				element2.setAttribute('value', 'Send');
+				
+				field.appendChild(element2);
+				
+				body.appendChild(field);
+				
+				// send user input through the socket and remove the field
+				document.getElementById('chat-message-submit').onclick = function(e) {
+					var message = document.querySelector('input[name="radio"]:checked').value;
+					chatSocket.send(JSON.stringify({
+						'message': message
+					}));
+					
+					var field = document.getElementById('answer-field');
+					
+					field.parentNode.removeChild(field);
+				};
+			}
+			else if (input_type == 'checkbox') {
+				// create checbox
+				for (i = 0; i < answer.length; i++) {
+					var element = document.createElement('input');
+					element.setAttribute('type', input_type);
+					element.setAttribute('name', 'checkbox');
+					element.setAttribute('value', answer[i]);
+					
+					field.appendChild(element);
+					
+					var text = document.createTextNode(answer[i] + '\t');
+					
+					field.appendChild(text);
+				}
+				
+				// create submit button
+				var element2 = document.createElement('input');
+				element2.setAttribute('id', 'chat-message-submit');
+				element2.setAttribute('type', 'button');
+				element2.setAttribute('value', 'Send');
+				
+				field.appendChild(element2);
+				
+				body.appendChild(field);
+				
+				// send user input through the socket and remove the field
+				document.getElementById('chat-message-submit').onclick = function(e) {
+					var checkboxes = document.getElementsByName('checkbox');
+					var message = '';
+					for (i = 0; i < checkboxes.length; i++) 
+					{
+						if (checkboxes[i].checked) 
+						{
+							message += ', ' + checkboxes[i].value;
+						}
+					}
+					if (message) {
+						message = message.substring(2);
+					}
+					
+					chatSocket.send(JSON.stringify({
+						'message': message
+					}));
+					
+					var field = document.getElementById('answer-field');
+					
+					field.parentNode.removeChild(field);
+				};
+			}
+			else if (input_type == 'date') {
+				// create date picker
+				var element = document.createElement('input');
+				element.setAttribute('id', 'date');
+				element.setAttribute('type', input_type);
+				element.setAttribute('name', 'date');
+				field.appendChild(element);
+				
+				// create submit button
+				var element2 = document.createElement('input');
+				element2.setAttribute('id', 'chat-message-submit');
+				element2.setAttribute('type', 'button');
+				element2.setAttribute('value', 'Send');
+				
+				field.appendChild(element2);
+				
+				body.appendChild(field);
+				
+				// send user input through the socket and remove the field
+				document.getElementById('chat-message-submit').onclick = function(e) {
+					var message = document.getElementById('date').value;
+					chatSocket.send(JSON.stringify({
+						'message': message
+					}));
+					
+					var field = document.getElementById('answer-field');
+					
+					field.parentNode.removeChild(field);
+				};
+			}
+			else if (input_type == 'time') {
+				// create time picker
+				var element = document.createElement('input');
+				element.setAttribute('id', 'time');
+				element.setAttribute('type', input_type);
+				element.setAttribute('name', 'time');
+				field.appendChild(element);
+				
+				// create submit button
+				var element2 = document.createElement('input');
+				element2.setAttribute('id', 'chat-message-submit');
+				element2.setAttribute('type', 'button');
+				element2.setAttribute('value', 'Send');
+				
+				field.appendChild(element2);
+				
+				body.appendChild(field);
+				
+				// send user input through the socket and remove the field
+				document.getElementById('chat-message-submit').onclick = function(e) {
+					var message = document.getElementById('time').value;
+					chatSocket.send(JSON.stringify({
+						'message': message
+					}));
+					
+					var field = document.getElementById('answer-field');
+					
+					field.parentNode.removeChild(field);
+				};
+			}
+		}
+	};
+	
+	chatSocket.onclose = function(e) {
+		console.error('Chat socket closed unexpectedly');
+	};
+</script>
+</html>
