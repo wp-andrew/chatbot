@@ -25,12 +25,12 @@ The application based on two core components:
 
 ### Updating the Q&A database
 1. Add more questions and answers into QnA.txt in the following format (currently the supported input types are text, radio, checkbox, date, time):
-   > question
-   > input_type nb_of_answer
-   > answer1
-   > answer2
-   > ...
-   > --- empty line ---
+   > question  
+   > input_type nb_of_answer  
+   > answer1  
+   > answer2  
+   > ...  
+   > --- empty line ---  
 2. run createjson.py
 3. python manage.py loaddata question.json
 4. python manage.py loaddata answer.json
